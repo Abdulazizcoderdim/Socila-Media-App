@@ -174,5 +174,3 @@ model Story {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @unique
 }
-
-//2:17:00
