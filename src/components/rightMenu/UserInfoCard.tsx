@@ -1,3 +1,5 @@
+import prisma from '@/lib/client'
+import { auth } from '@clerk/nextjs/server'
 import { User } from '@prisma/client'
 import {
   BriefcaseBusiness,
@@ -9,14 +11,47 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 
-const UserInfoCard = ({ user }: { user: User }) => {
+const UserInfoCard = async ({ user }: { user: User }) => {
   const createdAtDate = new Date(user.createdAt)
-  
+
   const formatedDate = createdAtDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   })
+
+  let isUserBlocked = false
+  let isFollowing = false
+  let isFollowingSent = false
+
+  const { userId: currentUserId } = auth()
+
+  if (currentUserId) {
+    const blockRes = await prisma.block.findFirst({
+      where: {
+        blockerId: currentUserId,
+        blockedId: user.id,
+      },
+    })
+
+    blockRes ? (isUserBlocked = true) : (isUserBlocked = false)
+    const followRes = await prisma.follower.findFirst({
+      where: {
+        followerId: currentUserId,
+        followingId: user.id,
+      },
+    })
+
+    followRes ? (isFollowing = true) : (isFollowing = false)
+    const followReqRes = await prisma.followRequest.findFirst({
+      where: {
+        senderId: currentUserId,
+        receiverId: user.id,
+      },
+    })
+
+    followReqRes ? (isFollowingSent = true) : (isFollowingSent = false)
+  }
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md text-sm flex flex-col gap-4">
@@ -65,10 +100,7 @@ const UserInfoCard = ({ user }: { user: User }) => {
           {user.website && (
             <div className="flex gap-1 items-center">
               <Link2 width={16} height={16} />
-              <Link
-                href={user.website}
-                className="text-blue-500 font-medium"
-              >
+              <Link href={user.website} className="text-blue-500 font-medium">
                 {user.website}
               </Link>
             </div>

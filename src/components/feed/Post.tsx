@@ -82,7 +82,7 @@ const Post = () => {
         </div>
       </div>
       {/* COMMENT */}
-      <Comments/>
+      <Comments />
     </div>
   )
 }
