@@ -1,3 +1,4 @@
+import ProfileUnavailable from '@/components/ProfileUnavailable'
 import Feed from '@/components/feed/Feed'
 import LeftMenu from '@/components/leftMenu/LeftMenu'
 import RightMenu from '@/components/rightMenu/RightMenu'
@@ -10,7 +11,7 @@ import React from 'react'
 const ProfilePage = async ({ params }: { params: { username: string } }) => {
   const username = params.username
 
-  const user = await prisma.user.findFirst({
+  const user = await prisma.user.findUnique({
     where: {
       username,
     },
@@ -25,26 +26,33 @@ const ProfilePage = async ({ params }: { params: { username: string } }) => {
     },
   })
 
-  if (!user) return notFound()
+  if (!user) {
+    console.log(`User not found for username: ${username}`)
+    return notFound()
+  }
 
   const { userId: currentUserId } = auth()
 
-  let isBlocked
+  // Check if user is blocked
+  let isBlocked = false
 
-  if (currentUserId) {
-    const res = await prisma.block.findFirst({
+  if (currentUserId && currentUserId !== user.id) {
+    const blockRecord = await prisma.block.findFirst({
       where: {
-        blockerId: user.id,
-        blockedId: currentUserId,
+        OR: [{ blockerId: user.id, blockedId: currentUserId }],
       },
     })
 
-    if (res) isBlocked = true
-  } else {
-    isBlocked = false
+    isBlocked = !!blockRecord
   }
 
-  if (isBlocked) return notFound()
+  console.log(`Is user blocked: ${isBlocked}`)
+  // end
+
+  if (isBlocked) {
+    console.log('User is blocked...')
+    return <ProfileUnavailable />
+  }
 
   return (
     <div className="flex gap-6 pt-6">
