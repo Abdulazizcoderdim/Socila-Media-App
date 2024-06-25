@@ -7,7 +7,7 @@ export const switchFollow = async (userId: string) => {
   const { userId: currentUserId } = auth()
 
   if (!currentUserId) {
-    throw new Error('User not authenticated!!!')
+    throw new Error('User is not authenticated!')
   }
 
   try {
@@ -47,8 +47,8 @@ export const switchFollow = async (userId: string) => {
         })
       }
     }
-  } catch (error) {
-    console.log(error)
-    throw new Error('Something went wrong || switchFollow....')
+  } catch (err) {
+    console.log(err)
+    throw new Error('Something went wrong || switchFollow')
   }
 }
