@@ -1,38 +1,46 @@
 import Image from 'next/image'
 import Comments from './Comments'
+import { Post as PostType, User } from '@prisma/client'
 
-const Post = () => {
+type FeedPostType = PostType & { user: User } & {
+  likes: [{ userId: string }]
+} & {
+  _count: { comments: number }
+}
+
+const Post = ({ post }: { post: FeedPostType }) => {
   return (
     <div className="flex flex-col gap-4">
       {/* USER */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Image
-            src="https://images.pexels.com/photos/19915666/pexels-photo-19915666.jpeg?auto=compress&cs=tinysrgb&w=400&lazy=load"
+            src={post.user.avatar || 'noAvatar.png'}
             width={40}
             height={40}
             alt=""
             className="w-10 h-10 rounded-full"
           />
-          <span className="font-medium">Jack McBride</span>
+          <span className="font-medium">
+            {post.user.name && post.user.surname
+              ? post.user.name + ' ' + post.user.surname
+              : post.user.username}
+          </span>
         </div>
         <Image src="/more.png" width={16} height={16} alt="" />
       </div>
       {/* DESC */}
       <div className="flex flex-col gap-4">
-        <div className="w-full min-h-96 relative">
+        {post.img && <div className="w-full min-h-96 relative">
           <Image
+            src={post.img}
             fill
             className="object-cover rounded-md"
-            src="https://images.pexels.com/photos/26052406/pexels-photo-26052406.jpeg?auto=compress&cs=tinysrgb&w=400&lazy=load"
             alt=""
           />
-        </div>
+        </div>}
         <p>
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit. Nisi quia,
-          hic minus quis porro at aut magni veniam iste laudantium incidunt. Ea
-          sint animi possimus voluptatem, illum accusamus architecto
-          consectetur?
+          {post.desc}
         </p>
       </div>
       {/* INTERACTION */}
@@ -76,7 +84,7 @@ const Post = () => {
             />
             <span className="text-gray-300">|</span>
             <span className="text-gray-500">
-              123 <span className="hidden md:inline"> Shares</span>
+              <span className="hidden md:inline"> Share</span>
             </span>
           </div>
         </div>

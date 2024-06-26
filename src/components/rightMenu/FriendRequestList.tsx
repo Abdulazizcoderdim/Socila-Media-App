@@ -1,51 +1,43 @@
-'use client'
+"use client";
 
-import Image from 'next/image'
-import { FollowRequest, User } from '@prisma/client'
-import { useOptimistic, useState } from 'react'
-import { acceptFollowRequest, declineFollowRequest } from '@/lib/actions'
+import { acceptFollowRequest, declineFollowRequest } from "@/lib/actions";
+import { FollowRequest, User } from "@prisma/client";
+import Image from "next/image";
+import { useOptimistic, useState } from "react";
 
-type RequestsWithUser = FollowRequest & {
-  sender: User
-}
+type RequestWithUser = FollowRequest & {
+  sender: User;
+};
 
-const FriendRequestList = ({ requests }: { requests: RequestsWithUser[] }) => {
-  const [requestState, setRequestState] = useState(requests)
+const FriendRequestList = ({ requests }: { requests: RequestWithUser[] }) => {
+  const [requestState, setRequestState] = useState(requests);
 
-  const accept = async (requestId: number, userId: string) => {
-    removeOptimisticRequest(requestId)
+  const accept = async (requestId: string, userId: string) => {
+    removeOptimisticRequest(requestId);
     try {
-      await acceptFollowRequest(userId)
-      setRequestState((prev) =>
-        prev.filter((req) => Number(req.id) !== requestId)
-      )
-    } catch (error) {
-      console.log('accept folow', error)
-    }
-  }
-  const decline = async (requestId: number, userId: string) => {
-    removeOptimisticRequest(requestId)
+      await acceptFollowRequest(userId);
+      setRequestState((prev) => prev.filter((req) => req.id !== requestId));
+    } catch (err) {}
+  };
+  const decline = async (requestId: string, userId: string) => {
+    removeOptimisticRequest(requestId);
     try {
-      await declineFollowRequest(userId)
-      setRequestState((prev) =>
-        prev.filter((req) => Number(req.id) !== requestId)
-      )
-    } catch (error) {
-      console.log('accept folow', error)
-    }
-  }
+      await declineFollowRequest(userId);
+      setRequestState((prev) => prev.filter((req) => req.id !== requestId));
+    } catch (err) {}
+  };
 
   const [optimisticRequests, removeOptimisticRequest] = useOptimistic(
     requestState,
-    (state, value: number) => state.filter((req) => Number(req.id) !== value)
-  )
+    (state, value: string) => state.filter((req) => req.id !== value)
+  );
   return (
-    <div className="flex flex-col gap-3">
+    <div className="">
       {optimisticRequests.map((request) => (
-        <div key={request.id} className="flex items-center justify-between">
+        <div className="flex items-center justify-between" key={request.id}>
           <div className="flex items-center gap-4">
             <Image
-              src={request.sender.avatar || '/noAvatar.png'}
+              src={request.sender.avatar || "/noAvatar.png"}
               alt=""
               width={40}
               height={40}
@@ -53,13 +45,13 @@ const FriendRequestList = ({ requests }: { requests: RequestsWithUser[] }) => {
             />
             <span className="font-semibold">
               {request.sender.name && request.sender.surname
-                ? request.sender.name + ' ' + request.sender.surname
+                ? request.sender.name + " " + request.sender.surname
                 : request.sender.username}
             </span>
           </div>
           <div className="flex gap-3 justify-end">
-            <form action={() => accept(Number(request.id), request.sender.id)}>
-              <button title="accept">
+            <form action={() => accept(request.id, request.sender.id)}>
+              <button>
                 <Image
                   src="/accept.png"
                   alt=""
@@ -69,8 +61,8 @@ const FriendRequestList = ({ requests }: { requests: RequestsWithUser[] }) => {
                 />
               </button>
             </form>
-            <form action={() => decline(Number(request.id), request.sender.id)}>
-              <button title="decline">
+            <form action={() => decline(request.id, request.sender.id)}>
+              <button>
                 <Image
                   src="/reject.png"
                   alt=""
@@ -84,7 +76,7 @@ const FriendRequestList = ({ requests }: { requests: RequestsWithUser[] }) => {
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
-export default FriendRequestList
+export default FriendRequestList;
