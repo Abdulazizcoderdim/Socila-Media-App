@@ -54,7 +54,7 @@ export const switchFollow = async (userId: string) => {
 }
 
 export const switchBlock = async (userId: string) => {
-  const {userId: currentUserId} = auth()
+  const { userId: currentUserId } = auth()
 
   if (!currentUserId) {
     throw new Error('User is not authenticated!')
@@ -74,16 +74,78 @@ export const switchBlock = async (userId: string) => {
           id: existingBlock.id,
         },
       })
-    }else{
+    } else {
       await prisma.block.create({
         data: {
           blockerId: currentUserId,
           blockedId: userId,
-        }
+        },
       })
     }
   } catch (error) {
     console.log(error)
     throw new Error('Something went wrong || switchBlock')
+  }
+}
+
+export const acceptFollowRequest = async (userId: string) => {
+  const { userId: currentUserId } = auth()
+
+  if (!currentUserId) {
+    throw new Error('User is not authenticated!')
+  }
+
+  try {
+    const existingFollowRequest = await prisma.followRequest.findFirst({
+      where: {
+        senderId: userId,
+        receiverId: currentUserId,
+      },
+    })
+
+    if (existingFollowRequest) {
+      await prisma.followRequest.delete({
+        where: {
+          id: existingFollowRequest.id,
+        },
+      })
+
+      await prisma.follower.create({
+        data: {
+          followerId: userId,
+          followingId: currentUserId,
+        },
+      })
+    }
+  } catch (error) {
+    console.log(error)
+    throw new Error('Something went wrong || acceptFollowRequest')
+  }
+}
+export const declineFollowRequest = async (userId: string) => {
+  const { userId: currentUserId } = auth()
+
+  if (!currentUserId) {
+    throw new Error('User is not authenticated!')
+  }
+
+  try {
+    const existingFollowRequest = await prisma.followRequest.findFirst({
+      where: {
+        senderId: userId,
+        receiverId: currentUserId,
+      },
+    })
+
+    if (existingFollowRequest) {
+      await prisma.followRequest.delete({
+        where: {
+          id: existingFollowRequest.id,
+        },
+      })
+    }
+  } catch (error) {
+    console.log(error)
+    throw new Error('Something went wrong || acceptFollowRequest')
   }
 }
