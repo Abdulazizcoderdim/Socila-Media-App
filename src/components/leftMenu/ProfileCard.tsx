@@ -5,9 +5,12 @@ import Image from 'next/image'
 const ProfileCard = async () => {
   const { userId } = auth()
 
-  if (!userId) return null
+  if (!userId) {
+    console.log("User is not authenticated ProfileCard!",)
+    return null
+  }
 
-  const user = await prisma.user.findFirst({
+  const user = await prisma.user.findUnique({
     where: {
       id: userId,
     },
@@ -21,7 +24,10 @@ const ProfileCard = async () => {
   })
   console.log(user)
 
-  if (!user) return null
+  if (!user) {
+    console.log("User not found ProfileCard!",)
+    return null
+  }
 
   return (
     <div className="p-4 bg-white rounded-lg shadow-md text-sm flex flex-col gap-6">

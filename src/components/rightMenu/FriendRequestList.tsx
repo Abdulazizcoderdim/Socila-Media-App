@@ -9,18 +9,22 @@ type RequestsWithUser = FollowRequest & {
 
 const FriendRequestList = ({ requests }: { requests: RequestsWithUser[] }) => {
   return (
-    <div>
+    <div className='flex flex-col gap-3'>
       {requests.map((request) => (
         <div key={request.id} className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Image
-              src="https://images.pexels.com/photos/19915666/pexels-photo-19915666.jpeg?auto=compress&cs=tinysrgb&w=400&lazy=load"
+              src={request.sender.avatar || '/noAvatar.png'}
               alt=""
               width={40}
               height={40}
               className="w-10 h-10 rounded-full object-cover"
             />
-            <span className="font-semibold">Wayne Burton</span>
+            <span className="font-semibold">
+              {request.sender.name && request.sender.surname
+                ? request.sender.name + ' ' + request.sender.surname
+                : request.sender.username}
+            </span>
           </div>
           <div className="flex gap-3 justify-end">
             <Image
