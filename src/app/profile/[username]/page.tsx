@@ -1,4 +1,5 @@
 import ProfileUnavailable from '@/components/ProfileUnavailable'
+import UserNotFoundHandler from '@/components/UserNotFoundHandler'
 import Feed from '@/components/feed/Feed'
 import LeftMenu from '@/components/leftMenu/LeftMenu'
 import RightMenu from '@/components/rightMenu/RightMenu'
@@ -27,8 +28,8 @@ const ProfilePage = async ({ params }: { params: { username: string } }) => {
   })
 
   if (!user) {
-    console.log(`User not found for username: ${username}`)
-    return notFound()
+    console.error(`User not found for username: ${username}`);
+    return <UserNotFoundHandler username={username} />;
   }
 
   const { userId: currentUserId } = auth()
