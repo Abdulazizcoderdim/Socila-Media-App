@@ -1,20 +1,27 @@
-import prisma from '@/lib/client'
-import { auth } from '@clerk/nextjs/server'
-import Image from 'next/image'
-import { ObjectId } from 'mongodb'
+'use client'
 
-const id = new ObjectId().toString()
+import { useUser } from '@clerk/nextjs'
+import { auth } from '@clerk/nextjs/server'
+import { CldUploadWidget } from 'next-cloudinary'
+import Image from 'next/image'
+import { useState } from 'react'
 
 const AddPost = () => {
-  const { userId } = auth()
-  
+  const { user, isLoaded } = useUser()
+  const [desc, setDesc] = useState('')
+  const [img, setImg] = useState<any>()
+
+  if (!isLoaded) {
+    return 'Loading...'
+  }
+
   return (
     <div className="p-4 bg-white shadow-md rounded-lg flex gap-4 justify-between text-sm">
       {/* Avatart */}
       <Image
+        src={user?.imageUrl || '/noAvatar.png'}
         width={48}
         height={48}
-        src="https://images.pexels.com/photos/20485643/pexels-photo-20485643.jpeg?auto=compress&cs=tinysrgb&w=400&lazy=load"
         alt=""
         className="w-12 h-12 object-cover rounded-full"
       />
@@ -26,6 +33,7 @@ const AddPost = () => {
             className="flex-1 bg-slate-100 rounded-t rounded-l-lg p-2"
             placeholder="What's on your mind?"
             name="desc"
+            onChange={(e) => setDesc(e.target.value)}
           ></textarea>
           <Image
             width={20}
@@ -34,14 +42,30 @@ const AddPost = () => {
             alt=""
             className="w-5 h-5 cursor-pointer self-end"
           />
-          <button>Send</button>
+          {/* <button>Send</button> */}
         </form>
         {/* Post options */}
         <div className="flex items-center gap-4 mt-4 text-gray-400 flex-wrap">
-          <div className="flex items-center gap-2 cursor-pointer">
-            <Image width={20} height={20} src="/addimage.png" alt="" />
-            Photo
-          </div>
+          <CldUploadWidget
+            uploadPreset="social"
+            onSuccess={(result, { widget }) => {
+              setImg(result.info)
+              widget.close()
+            }}
+          >
+            {({ open }) => {
+              return (
+                <div
+                  onClick={() => open()}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <Image width={20} height={20} src="/addimage.png" alt="" />
+                  Photo
+                </div>
+              )
+            }}
+          </CldUploadWidget>
+
           <div className="flex items-center gap-2 cursor-pointer">
             <Image width={20} height={20} src="/addVideo.png" alt="" />
             Video
@@ -61,4 +85,3 @@ const AddPost = () => {
 }
 
 export default AddPost
-//2:32:00

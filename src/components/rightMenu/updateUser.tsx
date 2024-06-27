@@ -3,22 +3,16 @@
 import { updateProfile } from '@/lib/actions'
 import { User } from '@prisma/client'
 import Image from 'next/image'
-import { useActionState, useRef, useState } from 'react'
-// import { CldUploadWidget } from "next-cloudinary";
+import { useActionState, useState } from 'react'
+import { CldUploadWidget } from 'next-cloudinary'
 import { useRouter } from 'next/navigation'
-import { X } from 'lucide-react'
 import UpdateButton from './UpdateButton'
-// import UpdateButton from "./UpdateButton";
+import { X } from 'lucide-react'
 
 const UpdateUser = ({ user }: { user: User }) => {
   const [open, setOpen] = useState(false)
   const [cover, setCover] = useState<any>(false)
-  const modalRef = useRef<HTMLDivElement>(null)
-
-  const closeModal = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === modalRef.current) setOpen(false)
-  }
-
+  
   const [state, formAction] = useActionState(updateProfile, {
     success: false,
     error: false,
@@ -30,7 +24,6 @@ const UpdateUser = ({ user }: { user: User }) => {
     setOpen(false)
     state.success && router.refresh()
   }
-  
 
   return (
     <div className="">
@@ -42,9 +35,7 @@ const UpdateUser = ({ user }: { user: User }) => {
       </span>
       {open && (
         <div
-          ref={modalRef}
-          onClick={closeModal}
-          className=" fixed w-screen h-screen top-0 left-0 bg-black bg-opacity-65 flex items-center justify-center z-50 "
+          className="fixed w-screen h-screen top-0 left-0 bg-black bg-opacity-65 flex items-center justify-center z-50 "
         >
           <form
             action={(formData) =>
@@ -58,8 +49,7 @@ const UpdateUser = ({ user }: { user: User }) => {
               Use the navbar profile to change the avatar or username.
             </div>
             {/* COVER PIC UPLOAD */}
-
-            {/* <CldUploadWidget
+            <CldUploadWidget
               uploadPreset="social"
               onSuccess={(result) => setCover(result.info)}
             >
@@ -72,7 +62,7 @@ const UpdateUser = ({ user }: { user: User }) => {
                     <label htmlFor="">Cover Picture</label>
                     <div className="flex items-center gap-2 cursor-pointer">
                       <Image
-                        src={user.cover || "/noCover.png"}
+                        src={user.cover || '/noCover.png'}
                         alt=""
                         width={48}
                         height={32}
@@ -83,9 +73,9 @@ const UpdateUser = ({ user }: { user: User }) => {
                       </span>
                     </div>
                   </div>
-                );
+                )
               }}
-            </CldUploadWidget> */}
+            </CldUploadWidget>
 
             {/* WRAPPER */}
             <div className="grid grid-cols-2 gap-2 xl:gap-4">
@@ -176,7 +166,7 @@ const UpdateUser = ({ user }: { user: User }) => {
                 />
               </div>
             </div>
-            <UpdateButton/>
+            <UpdateButton />
             {state.success && (
               <span className="text-green-500">Profile has been updated!</span>
             )}
