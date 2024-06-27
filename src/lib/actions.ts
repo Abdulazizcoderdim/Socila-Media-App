@@ -199,3 +199,38 @@ export const updateProfile = async (
     return { success: false, error: true };
   }
 };
+
+
+export const switchLike = async (postId: string) => {
+  const { userId } = auth()
+
+  if (!userId) {
+    throw new Error('User is not authenticated!')
+  }
+
+  try {
+    const existingLike = await prisma.like.findFirst({
+      where: {
+        postId,
+        userId,
+      },
+    })
+
+    if (existingLike) {
+      await prisma.like.delete({
+        where: {
+          id: existingLike.id,
+        }
+      })
+    }else{
+      await prisma.like.create({
+        data:{
+          postId,
+          userId
+        }
+      })
+    }
+  } catch (err) {
+    console.log("switchLike cato..",err)
+  }
+}
