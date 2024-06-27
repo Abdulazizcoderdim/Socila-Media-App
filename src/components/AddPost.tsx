@@ -5,6 +5,8 @@ import { auth } from '@clerk/nextjs/server'
 import { CldUploadWidget } from 'next-cloudinary'
 import Image from 'next/image'
 import { useState } from 'react'
+import AddPostButton from './AddPostButton'
+import { addPost } from '@/lib/actions'
 
 const AddPost = () => {
   const { user, isLoaded } = useUser()
@@ -28,21 +30,23 @@ const AddPost = () => {
       {/* Post */}
       <div className="flex-1">
         {/* Text input */}
-        <form action="" className="flex gap-4">
+        <form action={(formData)=>addPost(formData,img?.secure_url || "")} className="flex gap-4">
           <textarea
             className="flex-1 bg-slate-100 rounded-t rounded-l-lg p-2"
             placeholder="What's on your mind?"
             name="desc"
             onChange={(e) => setDesc(e.target.value)}
           ></textarea>
-          <Image
-            width={20}
-            height={20}
-            src="/emoji.png"
-            alt=""
-            className="w-5 h-5 cursor-pointer self-end"
-          />
-          {/* <button>Send</button> */}
+          <div className="">
+            <Image
+              width={20}
+              height={20}
+              src="/emoji.png"
+              alt=""
+              className="w-5 h-5 cursor-pointer self-end"
+            />
+            <AddPostButton />
+          </div>
         </form>
         {/* Post options */}
         <div className="flex items-center gap-4 mt-4 text-gray-400 flex-wrap">
