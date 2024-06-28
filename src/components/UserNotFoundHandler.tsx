@@ -22,7 +22,7 @@ const UserNotFoundHandler = ({ username }: { username: string }) => {
         <Alert variant="destructive">
           <AlertTitle>User Not Found</AlertTitle>
           <AlertDescription>
-            We couldn't find a user with the username: {username}
+            We couldn&apos;t find a user with the username: {username}
           </AlertDescription>
         </Alert>
         <div className="mt-4 flex space-x-4">
