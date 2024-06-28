@@ -8,7 +8,6 @@ import {
   SignedOut,
   UserButton,
 } from '@clerk/nextjs'
-import { CircleUserRound } from 'lucide-react'
 
 const Navbar = () => {
   return (
@@ -89,7 +88,7 @@ const Navbar = () => {
           </SignedIn>
           <SignedOut>
             <div className="flex items-center gap-2 text-sm">
-              <CircleUserRound width={20} height={20} />
+              <Image src="/login.png" alt="" width={20} height={20} />
               <Link href="/sign-in">Login/Register</Link>
             </div>
           </SignedOut>

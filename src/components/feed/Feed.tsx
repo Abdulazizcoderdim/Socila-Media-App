@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import Post from './Post'
 import prisma from '@/lib/client'
 
-const Feed = async ({ username }: { username: string }) => {
+const Feed = async ({ username }: { username?: string }) => {
   const { userId } = auth()
 
   let posts: any[] = []

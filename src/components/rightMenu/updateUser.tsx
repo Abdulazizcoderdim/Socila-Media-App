@@ -7,7 +7,6 @@ import { useActionState, useState } from 'react'
 import { CldUploadWidget } from 'next-cloudinary'
 import { useRouter } from 'next/navigation'
 import UpdateButton from './UpdateButton'
-import { X } from 'lucide-react'
 
 const UpdateUser = ({ user }: { user: User }) => {
   const [open, setOpen] = useState(false)
@@ -177,7 +176,7 @@ const UpdateUser = ({ user }: { user: User }) => {
               className="absolute text-xl right-2 top-3 cursor-pointer"
               onClick={handleClose}
             >
-              <X />
+              X
             </div>
           </form>
         </div>

@@ -51,7 +51,7 @@ const FriendRequestList = ({ requests }: { requests: RequestWithUser[] }) => {
           </div>
           <div className="flex gap-3 justify-end">
             <form action={() => accept(request.id, request.sender.id)}>
-              <button>
+              <button title="buton">
                 <Image
                   src="/accept.png"
                   alt=""
@@ -62,7 +62,7 @@ const FriendRequestList = ({ requests }: { requests: RequestWithUser[] }) => {
               </button>
             </form>
             <form action={() => decline(request.id, request.sender.id)}>
-              <button>
+              <button title="buton">
                 <Image
                   src="/reject.png"
                   alt=""
