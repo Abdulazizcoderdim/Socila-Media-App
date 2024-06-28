@@ -1,22 +1,26 @@
-import Image from 'next/image'
-import Comments from './Comments'
-import { Post as PostType, User } from '@prisma/client'
-import PostInteraction from './PostInteraction'
+import Image from "next/image";
+import Comments from "./Comments";
+import { Post as PostType, User } from "@prisma/client";
+import PostInteraction from "./PostInteraction";
+import { Suspense } from "react";
+import PostInfo from "./PostInfo";
+import { auth } from "@clerk/nextjs/server";
 
 type FeedPostType = PostType & { user: User } & {
-  likes: [{ userId: string }]
+  likes: [{ userId: string }];
 } & {
-  _count: { comments: number }
-}
+  _count: { comments: number };
+};
 
 const Post = ({ post }: { post: FeedPostType }) => {
+  const { userId } = auth();
   return (
     <div className="flex flex-col gap-4">
       {/* USER */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Image
-            src={post.user.avatar || 'noAvatar.png'}
+            src={post.user.avatar || "/noAvatar.png"}
             width={40}
             height={40}
             alt=""
@@ -24,11 +28,11 @@ const Post = ({ post }: { post: FeedPostType }) => {
           />
           <span className="font-medium">
             {post.user.name && post.user.surname
-              ? post.user.name + ' ' + post.user.surname
+              ? post.user.name + " " + post.user.surname
               : post.user.username}
           </span>
         </div>
-        <Image src="/more.png" width={16} height={16} alt="" />
+        {userId === post.user.id && <PostInfo postId={post.id} />}
       </div>
       {/* DESC */}
       <div className="flex flex-col gap-4">
@@ -45,14 +49,18 @@ const Post = ({ post }: { post: FeedPostType }) => {
         <p>{post.desc}</p>
       </div>
       {/* INTERACTION */}
-      <PostInteraction
-        postId={post.id}
-        likes={post.likes.map((like) => like.userId)}
-        commentNumber={post._count.comments}
-      />
-      <Comments postId={post.id} />
+      <Suspense fallback="Loading...">
+        <PostInteraction
+          postId={post.id}
+          likes={post.likes.map((like) => like.userId)}
+          commentNumber={post._count.comments}
+        />
+      </Suspense>
+      <Suspense fallback="Loading...">
+        <Comments postId={post.id} />
+      </Suspense>
     </div>
-  )
-}
+  );
+};
 
-export default Post
+export default Post;
